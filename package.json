@@ -1,0 +1,82 @@
+{
+  "name": "upload-kit",
+  "version": "0.1.0",
+  "description": "Direct-to-S3 upload infrastructure for Express with presigned URLs, metadata persistence, and optional Kafka-powered background processing.",
+  "keywords": [
+    "s3",
+    "upload",
+    "download",
+    "express",
+    "presigned-url",
+    "kafka",
+    "aws",
+    "file-upload",
+    "typescript",
+    "middleware",
+    "storage",
+    "s3-upload",
+    "direct-upload",
+    "multipart",
+    "upload-kit"
+  ],
+  "license": "MIT",
+  "author": "Sohan Sarkar",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/your-org/upload-kit.git"
+  },
+  "homepage": "https://github.com/your-org/upload-kit#readme",
+  "bugs": {
+    "url": "https://github.com/your-org/upload-kit/issues"
+  },
+  "main": "dist/index.js",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "types": "dist/index.d.ts",
+  "sideEffects": false,
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "kafka:up": "docker compose up -d",
+    "kafka:down": "docker compose down",
+    "smoke:kafka": "node scripts/smoke-kafka.cjs",
+    "prepack": "npm run build",
+    "prepublishOnly": "npm run build && npm test"
+  },
+  "peerDependencies": {
+    "express": "^4.17.0 || ^5.0.0"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "3.1076.0",
+    "@aws-sdk/s3-request-presigner": "3.1076.0",
+    "kafkajs": "2.2.4"
+  },
+  "devDependencies": {
+    "@types/cors": "2.8.19",
+    "@types/express": "5.0.6",
+    "@types/node": "26.0.1",
+    "@types/supertest": "7.2.0",
+    "aws-sdk-client-mock": "4.1.0",
+    "cors": "2.8.6",
+    "dotenv": "17.4.2",
+    "express": "5.2.1",
+    "supertest": "7.2.2",
+    "typescript": "6.0.3",
+    "vitest": "4.1.9"
+  }
+}

@@ -1,0 +1,79 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Upload Kit Demo</title>
+  </head>
+  <body>
+    <h2>Upload Kit Playground</h2>
+
+    <input type="file" id="fileInput" />
+
+    <button id="uploadBtn">Upload</button>
+
+    <pre id="output"></pre>
+
+    <script>
+      const API = "http://localhost:3000";
+
+      async function uploadFile(file) {
+        // Get the Presigned upload URL
+        const uploadSession = await fetch(API + "/files/upload-url", {
+          method: "POST",
+
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer dev-token",
+          },
+
+          body: JSON.stringify({
+            originalName: file.name,
+            mimeType: file.type,
+          }),
+        });
+
+        const session = await uploadSession.json();
+
+        console.log(session);
+
+        // Upload using the URL received
+        await fetch(session.uploadUrl, {
+          method: "PUT",
+
+          headers: {
+            "Content-Type": file.type,
+          },
+
+          body: file,
+        });
+
+        // backend waits for completion to mark complete and save metadata, execute callback or publish the messages
+        const complete = await fetch(API + "/files/complete", {
+          method: "POST",
+
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer dev-token",
+          },
+
+          body: JSON.stringify({
+            id: session.id,
+
+            key: session.key,
+          }),
+        });
+
+        return await complete.json();
+      }
+
+      document.getElementById("uploadBtn").onclick = async () => {
+        const file = document.getElementById("fileInput").files[0];
+
+        if (!file) return alert("Choose a file");
+
+        const uploaded = await uploadFile(file);
+
+        document.getElementById("output").textContent = JSON.stringify(uploaded, null, 4);
+      };
+    </script>
+  </body>
+</html>
