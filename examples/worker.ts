@@ -46,7 +46,7 @@ process.on("SIGTERM", shutdown);
 
 uploader
   .startWorker()
-  .then(() => console.log("upload-kit worker started"))
+  .then(() => console.log("lb-upload-infra worker started"))
   .catch((err) => {
     console.error("worker failed to start", err);
     process.exit(1);

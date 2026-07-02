@@ -70,7 +70,7 @@ async function start() {
   // this web server only publishes.
   await uploader.ready();
   app.listen(port, () => {
-    console.log("upload-kit example on http://localhost:" + port + "/files");
+    console.log("lb-upload-infra example on http://localhost:" + port + "/files");
   });
 }
 

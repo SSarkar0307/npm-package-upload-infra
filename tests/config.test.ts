@@ -54,8 +54,8 @@ describe("normalizeConfig", () => {
       metadata: store,
       kafka: { brokers: ["localhost:9092"], topic: "files" },
     });
-    expect(c.kafka?.clientId).toBe("upload-kit");
-    expect(c.kafka?.groupId).toBe("upload-kit-workers");
+    expect(c.kafka?.clientId).toBe("lb-upload-infra");
+    expect(c.kafka?.groupId).toBe("lb-upload-infra-workers");
     expect(c.kafka?.deadLetterTopic).toBeUndefined();
   });
 

@@ -1,4 +1,4 @@
-# upload-kit
+# lb-upload-infra
 
 ![Node](https://img.shields.io/badge/node-%3E%3D18-brightgreen) ![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue) ![Tests](https://img.shields.io/badge/tests-45%20passing-brightgreen) ![License](https://img.shields.io/badge/license-MIT-green)
 
@@ -62,7 +62,7 @@ Instead it gives you the hooks (metadata store, afterUpload, auth middleware) wh
 ## Install
 
 ```bash
-npm install upload-kit express
+npm install lb-upload-infra express
 ```
 
 Express is a peer dependency.
@@ -71,7 +71,7 @@ Express is a peer dependency.
 
 ```ts
 import express from "express";
-import { createUploader } from "upload-kit";
+import { createUploader } from "lb-upload-infra";
 
 const app = express();
 
@@ -371,7 +371,7 @@ app.use(cors({ origin: "https://your-app.com" }));
 Pass any Express middleware through the auth option, or use the built-in bearer-token helper. Auth protects every route.
 
 ```ts
-import { createUploader, bearerTokenAuth } from "upload-kit";
+import { createUploader, bearerTokenAuth } from "lb-upload-infra";
 
 const uploader = createUploader({
   s3: { /* ... */ },

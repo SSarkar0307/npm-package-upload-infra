@@ -11,8 +11,8 @@ const logger = {
 const kafkaConfig = {
   brokers: ["localhost:9092"],
   topic: "smoke-file-processing",
-  clientId: "upload-kit-smoke",
-  groupId: "upload-kit-smoke-" + Date.now(),
+  clientId: "lb-upload-infra-smoke",
+  groupId: "lb-upload-infra-smoke-" + Date.now(),
 };
 const kafka = new KafkaService(kafkaConfig, logger);
 

@@ -9,8 +9,8 @@ const logger: Logger = { info: () => {}, warn: () => {}, error: () => {} };
 const config: NormalizedKafkaConfig = {
   brokers: ["localhost:9092"],
   topic: "files",
-  clientId: "upload-kit",
-  groupId: "upload-kit-workers",
+  clientId: "lb-upload-infra",
+  groupId: "lb-upload-infra-workers",
 };
 
 const dlqConfig: NormalizedKafkaConfig = { ...config, deadLetterTopic: "files-dlq" };
@@ -90,7 +90,7 @@ describe("KafkaService", () => {
       throw new Error("boom");
     });
     await svc.startWorker(handler);
-    
+
     await expect(
       deliver(JSON.stringify({ eventId: "e1", occurredAt: "t1", file }))
     ).rejects.toThrow("boom");

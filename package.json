@@ -1,5 +1,5 @@
 {
-  "name": "upload-kit",
+  "name": "lb-upload-infra",
   "version": "0.1.0",
   "description": "Direct-to-S3 upload infrastructure for Express with presigned URLs, metadata persistence, and optional Kafka-powered background processing.",
   "keywords": [
@@ -17,17 +17,17 @@
     "s3-upload",
     "direct-upload",
     "multipart",
-    "upload-kit"
+    "lb-upload-infra"
   ],
   "license": "MIT",
   "author": "Sohan Sarkar",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/SSarkar0307/npm-package-upload-kit.git"
+    "url": "git+https://github.com/SSarkar0307/npm-package-upload-infra.git"
   },
-  "homepage": "https://github.com/SSarkar0307/npm-package-upload-kit#readme",
+  "homepage": "https://github.com/SSarkar0307/npm-package-upload-infra#readme",
   "bugs": {
-    "url": "https://github.com/SSarkar0307/npm-package-upload-kit/issues"
+    "url": "https://github.com/SSarkar0307/npm-package-upload-infra/issues"
   },
   "main": "dist/index.js",
   "exports": {

@@ -1,7 +1,7 @@
 services:
   kafka:
     image: apache/kafka:3.8.0
-    container_name: upload-kit-kafka
+    container_name: lb-upload-infra-kafka
     ports:
       - "9092:9092"
     environment:

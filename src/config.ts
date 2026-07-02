@@ -47,7 +47,7 @@ function isNonEmptyString(value: unknown): boolean {
 
 // Logger writes to the console (can be used if dev doesnt pass its own logger)
 function defaultLogger(): Logger {
-  const prefix = "[upload-kit]";
+  const prefix = "[lb-upload-infra]";
   return {
     info: (message, meta) => console.log(prefix, message, meta ?? ""),
     warn: (message, meta) => console.warn(prefix, message, meta ?? ""),
@@ -128,8 +128,8 @@ function normalizeKafka(kafka: KafkaConfig): NormalizedKafkaConfig {
   return {
     brokers: kafka.brokers,
     topic: kafka.topic,
-    clientId: kafka.clientId ?? "upload-kit",
-    groupId: kafka.groupId ?? "upload-kit-workers",
+    clientId: kafka.clientId ?? "lb-upload-infra",
+    groupId: kafka.groupId ?? "lb-upload-infra-workers",
     ssl: kafka.ssl,
     sasl: kafka.sasl,
     deadLetterTopic: kafka.deadLetterTopic,
