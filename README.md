@@ -4,7 +4,7 @@
 
 Plug-and-play S3 file upload and download for Express, with optional Kafka offloading for post-upload work.
 
-Upload Kit gives you presigned S3 uploads, upload verification, metadata storage hooks, downloads, and optional Kafka workers, in a few lines of Express. It owns the upload infrastructure; your app keeps its own database and business logic.
+Upload Infra gives you presigned S3 uploads, upload verification, metadata storage hooks, downloads, and optional Kafka workers, in a few lines of Express. It owns the upload infrastructure; your app keeps its own database and business logic.
 
 ## Architecture
 
@@ -12,25 +12,25 @@ Upload Kit gives you presigned S3 uploads, upload verification, metadata storage
 Browser
   | 1. POST /upload-url (ask for a presigned URL)
   v
-Express + Upload Kit
+Express + Upload Infra
   | 2. { id, key, uploadUrl }
   v
 Amazon S3 <--- 3. PUT file (browser uploads straight to S3)
   |
-  | 4. POST /complete (Upload Kit verifies with HeadObject)
+  | 4. POST /complete (Upload Infra verifies with HeadObject)
   v
-Express + Upload Kit
+Express + Upload Infra
   |
   +--> Your metadata store save(file) --> Mongo / Postgres / anything
   |
   +--> Kafka (optional) publish --> Worker --> afterUpload()
 ```
 
-One request path, two owners: Upload Kit owns the S3 and Kafka plumbing, your app owns the database and the afterUpload logic.
+One request path, two owners: Upload Infra owns the S3 and Kafka plumbing, your app owns the database and the afterUpload logic.
 
-## When to use Upload Kit
+## When to use Upload Infra
 
-Use Upload Kit if you:
+Use Upload Infra if you:
 
 - store files in Amazon S3 (or an S3-compatible service)
 - want direct browser-to-S3 uploads, so files do not pass through your server
@@ -39,9 +39,9 @@ Use Upload Kit if you:
 
 It is a thin infrastructure layer, not an ORM, a CMS, or a media-processing library.
 
-## What Upload Kit does NOT do
+## What Upload Infra does NOT do
 
-Upload Kit does not:
+Upload Infra does not:
 
 - create S3 buckets or configure bucket CORS
 - install or run Kafka
@@ -143,7 +143,7 @@ On GitHub the same flow renders as a sequence diagram:
 ```mermaid
 sequenceDiagram
   participant B as Browser
-  participant S as Express (Upload Kit)
+  participant S as Express (Upload Infra)
   participant S3 as Amazon S3
   participant K as Kafka (optional)
   participant W as Worker
@@ -180,10 +180,10 @@ At completion the client sends only the id and key it received from /upload-url.
 
 ## Metadata: you own your database
 
-Upload Kit never owns your database. It builds a metadata record and hands it to the three functions you provide:
+Upload Infra never owns your database. It builds a metadata record and hands it to the three functions you provide:
 
 ```text
-Upload Kit --save(file)--> your store --> Mongo | Postgres | DynamoDB | Redis | anything
+Upload Infra --save(file)--> your store --> Mongo | Postgres | DynamoDB | Redis | anything
 ```
 
 ```ts
@@ -304,7 +304,7 @@ Call uploader.close() on SIGINT/SIGTERM so Kafka disconnects cleanly.
 Without Kafka, one process is enough:
 
 ```text
-Browser -> Express (Upload Kit) -> Amazon S3
+Browser -> Express (Upload Infra) -> Amazon S3
         |
         v
        Your database
@@ -404,7 +404,7 @@ Clients then send the header Authorization: Bearer <token>. Pass an array to acc
 
 ## Logging
 
-Upload Kit logs the lifecycle through your logger (console by default):
+Upload Infra logs the lifecycle through your logger (console by default):
 
 ```text
 generated upload URL
@@ -420,7 +420,7 @@ Pass your own logger (with info, warn, error) to integrate with pino, winston, a
 
 ## Project structure
 
-A typical app using Upload Kit has two entry points that share one config:
+A typical app using Upload Infra has two entry points that share one config:
 
 ```text
 your-app/
@@ -432,9 +432,9 @@ your-app/
 
 Two entry files exist because the API and the worker are different processes: server.ts handles HTTP and publishes, worker.ts consumes Kafka and runs afterUpload, and uploader.ts holds the shared config. See the examples/ folder: server.ts, worker.ts, and frontend.html.
 
-## How Upload Kit compares
+## How Upload Infra compares
 
-| | Upload through your server (e.g. multer) | Upload Kit |
+| | Upload through your server (e.g. multer) | Upload Infra |
 | --- | --- | --- |
 | Upload path | browser -> your server -> S3 | browser -> S3 directly (presigned) |
 | Server load | buffers or streams the whole file | signs a URL and verifies |
@@ -446,7 +446,7 @@ Two entry files exist because the API and the worker are different processes: se
 - Do I need Kafka? No. Without it, afterUpload runs inline during /complete.
 - Can I use MongoDB? Yes, in your metadata functions.
 - Can I use PostgreSQL? Yes.
-- Can I use MinIO, Cloudflare R2, or localstack? Yes. Set s3.endpoint (and often s3.forcePathStyle). Upload Kit targets Amazon S3 but uses the S3 client, so S3-compatible services work.
+- Can I use MinIO, Cloudflare R2, or localstack? Yes. Set s3.endpoint (and often s3.forcePathStyle). Upload Infra targets Amazon S3 but uses the S3 client, so S3-compatible services work.
 - Does the file pass through my server? No. The browser uploads directly to S3.
 
 ## Roadmap
