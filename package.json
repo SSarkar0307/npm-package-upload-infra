@@ -23,11 +23,11 @@
   "author": "Sohan Sarkar",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/your-org/upload-kit.git"
+    "url": "git+https://github.com/SSarkar0307/npm-package-upload-kit.git"
   },
-  "homepage": "https://github.com/your-org/upload-kit#readme",
+  "homepage": "https://github.com/SSarkar0307/npm-package-upload-kit#readme",
   "bugs": {
-    "url": "https://github.com/your-org/upload-kit/issues"
+    "url": "https://github.com/SSarkar0307/npm-package-upload-kit/issues"
   },
   "main": "dist/index.js",
   "exports": {
