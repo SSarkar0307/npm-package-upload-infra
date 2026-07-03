@@ -5,4 +5,3 @@ coverage
 .DS_Store
 .env
 DEV_DOCS.md
-examples/pdf-worker/
