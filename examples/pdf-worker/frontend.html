@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>lb-upload-infra PDF demo</title>
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        max-width: 640px;
+        margin: 40px auto;
+        padding: 0 16px;
+      }
+      button {
+        padding: 8px 16px;
+      }
+      #log {
+        white-space: pre-wrap;
+        background: #f4f4f5;
+        padding: 12px;
+        border-radius: 8px;
+        margin-top: 16px;
+      }
+      .result {
+        font-size: 1.1rem;
+        margin-top: 16px;
+      }
+      .words {
+        font-weight: 700;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Upload a PDF</h1>
+    <p>
+      Pick a PDF. It uploads straight to S3, then a Kafka worker extracts the
+      first three words.
+    </p>
+    <input type="file" id="file" accept="application/pdf" />
+    <button id="btn">Upload</button>
+    <div class="result" id="result"></div>
+    <div id="log"></div>
+
+    <script>
+      const API = "http://localhost:3000";
+      const TOKEN = "dev-token";
+      const logEl = document.getElementById("log");
+      const resultEl = document.getElementById("result");
+
+      function log(msg) {
+        logEl.textContent += msg + "\n";
+      }
+
+      async function uploadFile(file) {
+        logEl.textContent = "";
+        resultEl.textContent = "";
+
+        log("requesting upload URL...");
+        const urlRes = await fetch(API + "/files/upload-url", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + TOKEN,
+          },
+          body: JSON.stringify({
+            originalName: file.name,
+            mimeType: file.type || "application/pdf",
+          }),
+        });
+        if (!urlRes.ok) {
+          log("upload-url failed: " + urlRes.status);
+          return;
+        }
+        const { id, key, uploadUrl } = await urlRes.json();
+        log("file id: " + id);
+
+        log("uploading to S3...");
+        const putRes = await fetch(uploadUrl, {
+          method: "PUT",
+          headers: { "Content-Type": file.type || "application/pdf" },
+          body: file,
+        });
+        if (!putRes.ok) {
+          log("S3 upload failed: " + putRes.status);
+          return;
+        }
+
+        log("completing...");
+        const doneRes = await fetch(API + "/files/complete", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + TOKEN,
+          },
+          body: JSON.stringify({ id, key }),
+        });
+        if (!doneRes.ok) {
+          log("complete failed: " + doneRes.status);
+          return;
+        }
+        log("upload complete. waiting for the worker...");
+
+        for (let i = 0; i < 30; i++) {
+          await new Promise((r) => setTimeout(r, 2000));
+          const sRes = await fetch(API + "/summary/" + id);
+          if (sRes.status === 200) {
+            const s = await sRes.json();
+            resultEl.innerHTML =
+              'First 3 words: <span class="words">' +
+              s.firstWords +
+              "</span> (total words: " +
+              s.wordCount +
+              ")";
+            log("done.");
+            return;
+          }
+          log("still processing...");
+        }
+        log("timed out waiting for the worker.");
+      }
+
+      document.getElementById("btn").addEventListener("click", () => {
+        const file = document.getElementById("file").files[0];
+        if (!file) {
+          log("pick a PDF first.");
+          return;
+        }
+        uploadFile(file).catch((e) => log("error: " + e.message));
+      });
+    </script>
+  </body>
+</html>
